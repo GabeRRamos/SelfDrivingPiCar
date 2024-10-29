@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Car Controller</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #controls { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Control the Pi Car</h1>
+    <div id="controls">
+        <button onclick="sendCommand('w')">Forward</button>
+        <button onclick="sendCommand('s')">Backward</button>
+        <button onclick="sendCommand('r')">Right</button>
+        <button onclick="sendCommand('l')">Left</button>
+        <button onclick="sendCommand('b')">Stop</button>
+        <button onclick="sendCommand('e')">Exit</button>
+    </div>
+    
+    <div id="video-container">
+      <h2>Live Camera Feed</h2>
+      <img id="video-feed" src="http://192.168.4.183:8080/feed.ffm" alt="Live stream" width="640" height="480">
+    </div>
+
+    <script>
+        let socket = new WebSocket("ws://192.168.4.183:8080/ws");
+
+        socket.onopen = function() {
+            console.log("WebSocket connection opened");
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        function sendCommand(command) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(command);
+            } else {
+                console.error("WebSocket connection not open");
+            }
+        }
+    </script>
+</body>
+</html>
