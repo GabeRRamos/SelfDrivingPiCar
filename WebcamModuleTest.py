@@ -7,7 +7,7 @@ picam2.configuure(picam2.create_preview_configuration(raw={"size":(1640,1232)},m
 picam2.start()
 time.sleep(2)
 
-while True
+while True:
   img = picam2.capture_array()
   cv2.imshow("Output",img)
   if cv2.waitKey(1) & 0xFF == ord('q'):
