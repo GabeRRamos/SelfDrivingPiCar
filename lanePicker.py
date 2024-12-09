@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import utlis
+import utilities
 
 curveList = []
 avgVal=10
@@ -10,17 +10,17 @@ def getLaneCurve(img, display=2):
     imgCopy = img.copy()
     imgResult = img.copy()
     #### STEP 1
-    imgThres = utlis.thresholding(img)
+    imgThres = utilities.thresholding(img)
 
     #### STEP 2
     hT, wT, c = img.shape
-    points = utlis.valTrackbars()
-    imgWarp = utlis.warpImg(imgThres, points, wT, hT)
-    imgWarpPoints = utlis.drawPoints(imgCopy, points)
+    points = utilities.valTrackbars()
+    imgWarp = utilities.warpImg(imgThres, points, wT, hT)
+    imgWarpPoints = utilities.drawPoints(imgCopy, points)
 
     #### STEP 3
-    middlePoint,imgHist = utlis.getHistogram(imgWarp,display=True,minPer=0.5,region=4)
-    curveAveragePoint,imgHist = utlis.getHistogram(imgWarp,display=True,minPer=0.9)
+    middlePoint,imgHist = utilities.getHistogram(imgWarp,display=True,minPer=0.5,region=4)
+    curveAveragePoint,imgHist = utilities.getHistogram(imgWarp,display=True,minPer=0.9)
     curveRaw = curveAveragePoint - middlePoint
 
     #### STEP 4
@@ -31,7 +31,7 @@ def getLaneCurve(img, display=2):
 
     #### STEP 5
     if display != 0:
-        imgInvWarp = utlis.warpImg(imgWarp, points, wT, hT,inv = True)
+        imgInvWarp = utilities.warpImg(imgWarp, points, wT, hT,inv = True)
         imgInvWarp = cv2.cvtColor(imgInvWarp,cv2.COLOR_GRAY2BGR)
         imgInvWarp[0:hT//3,0:wT] = 0,0,0
         imgLaneColor = np.zeros_like(img)
@@ -49,7 +49,7 @@ def getLaneCurve(img, display=2):
         #fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
         #cv2.putText(imgResult, 'FPS '+str(int(fps)), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (230,50,50), 3);
     if display == 2:
-        imgStacked = utlis.stackImages(0.7,([img,imgWarpPoints,imgWarp],
+        imgStacked = utilities.stackImages(0.7,([img,imgWarpPoints,imgWarp],
                                             [imgHist,imgLaneColor,imgResult]))
         cv2.imshow('ImageStack',imgStacked)
     elif display == 1:
@@ -71,7 +71,7 @@ def getLaneCurve(img, display=2):
 if __name__ == '__main__':
     cap = cv2.VideoCapture('vid1.mp4')
     initialTrackbarVals = [102, 80, 30, 214]
-    utlis.initializeTrackbars(initialTrackbarVals)
+    utilities.initializeTrackbars(initialTrackbarVals)
     frameCounter = 0
     while True:
         frameCounter +=1
