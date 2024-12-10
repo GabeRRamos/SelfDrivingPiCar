@@ -1,25 +1,29 @@
 import cv2
 import numpy as np
 
-def thresholding(img):
-    imgHSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lowerWhite = np.array([85,0,0])
-    upperWhite = np.array([255,213,255])
-    maskWhite = cv2.inRange(imgHSV, lowerWhite, upperWhite)
-    return maskWhite
 
+# Thresholding for HSV image space
+def thresholding(img):
+    img_HSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    lower_Whites = np.array([85,0,0])
+    upper_Whites = np.array([255,213,255])
+    newImg = cv2.inRange(img_HSV, lower_Whites, upper_Whites)
+    return newImg
+
+# Warping the image to be top down
 def warpImg(img, points, w, h, inv = False):
-    pts1 = np.float32(points)
-    pts2 = np.float32([[0,0], [w,0], [0,h], [w,h]])
+    points1 = np.float32(points)
+    points2 = np.float32([[0,0], [w,0], [0,h], [w,h]])
     if inv:
-        matrix = cv2.getPerspectiveTransform(pts2, pts1)
+        matrix = cv2.getPerspectiveTransform(points2, points1)
     else:
-        matrix = cv2.getPerspectiveTransform(pts1, pts2)
-    imgWarp = cv2.warpPerspective(img, matrix, (w,h))
-    return imgWarp
+        matrix = cv2.getPerspectiveTransform(points1, points2)
+    warpedImg = cv2.warpPerspective(img, matrix, (w,h))
+    return warpedImg
 
 def nothing(a):
     pass
+
 
 def initializeTrackbars(initialTrackbarVals, wT=480, hT=240):
     cv2.namedWindow("Trackbars")
@@ -37,26 +41,23 @@ def valTrackbars(wT=480, hT=240):
     points = np.float32([(widthTop, heightTop), (wT-widthTop, heightTop), (widthBottom, heightBottom), (wT-widthBottom, heightBottom)])
     return points
 
+# Draw points for warping
 def drawPoints(img, points):
     for x in range(4):
         cv2.circle(img,(int(points[x][0]), int(points[x][1])), 15, (0,0,255), cv2.FILLED)
     return img
 
+# Function that allows to get values of the histogram
 def getHistogram(img,minPer=0.1, display=False, region=1):
-    
-    
     if region == 1:
-        histValues = np.sum(img, axis=0)
+        histogram_Values = np.sum(img, axis=0)
     else:
-        histValues = np.sum(img[img.shape[0]//region:,:], axis=0)
-    #print(histValues)
-    maxValue = np.max(histValues)
-    #print(maxValue)
+        histogram_Values = np.sum(img[img.shape[0]//region:,:], axis=0)
+    maxValue = np.max(histogram_Values)
     minValue = minPer*maxValue
 
-    indexArray = np.where(histValues>=minValue)
+    indexArray = np.where(histogram_Values>=minValue)
     basePoint = int(np.average(indexArray))
-    #print(basePoint)
 
     if display:
         imgHist = np.zeros((img.shape[0], img.shape[1],3), np.uint8)
@@ -65,7 +66,8 @@ def getHistogram(img,minPer=0.1, display=False, region=1):
             cv2.circle(imgHist,(basePoint,img.shape[0]),20,(0,255,255),cv2.FILLED)
         return basePoint, imgHist
     return basePoint
-
+    
+# Function so that you can view all the images simultaneously next to each other.
 def stackImages(scale,imgArray):
     rows = len(imgArray)
     cols = len(imgArray[0])
