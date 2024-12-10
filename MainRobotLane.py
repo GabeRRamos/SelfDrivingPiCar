@@ -11,7 +11,7 @@ motor = Motor(4,17,27,25,23,24)
 def main():
 
     img = WebcamModule.getImg()
-    curveVal = getLaneCurve(img,1)
+    curveVal = getLaneCurve(img)
 
     sen = 1.5
     maxVAL = 0.5
