@@ -6,7 +6,7 @@ import WebcamModule
 curveList = []
 avgVal=10
 
-def getLaneCurve(img, display=2):
+def getLaneCurve(img):
 
     imgCopy = img.copy()
     imgResult = img.copy()
